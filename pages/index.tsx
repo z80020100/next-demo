@@ -2,8 +2,22 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { gql, useQuery } from '@apollo/client'
 
+const UserssQuery = gql`
+  query {
+    Users {
+      first_name
+      last_name
+      role
+    }
+  }
+`
 const Home: NextPage = () => {
+  const { data, loading, error } = useQuery(UserssQuery)
+  if (loading) return <p>{'[Info] Loading...'}</p>
+  if (error) return <p>{'[Error] '}{error.message}</p>
+
   return (
     <div className={styles.container}>
       <Head>
@@ -21,6 +35,13 @@ const Home: NextPage = () => {
           Get started by editing{' '}
           <code className={styles.code}>pages/index.tsx</code>
         </p>
+
+        {data.Users.map((user: any) => (
+          <div>
+            <h2>{user.role}</h2>
+            <p>{user.last_name} {user.first_name}</p>
+          </div>
+        ))}
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
